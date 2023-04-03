@@ -1,0 +1,35 @@
+.header {
+    color: rgba(0, 0, 0, 0.8);
+    padding-inline: 24px !important;
+    border-bottom: 1px solid rgba(5, 5, 5, 0.06);
+}
+
+.leftHeader {
+    display: inline-flex;
+    align-items: center;
+    -webkit-box-align: center;
+    column-gap: 16px;
+}
+.rightHeader {
+    float: right;
+    gap: 16px !important;
+    margin-inline-start: auto;
+    display: inline-flex;
+    align-items: center;   
+    -webkit-box-align: center;
+}
+.headerLogo {
+    height: 30px;
+    width: 30px;
+    vertical-align: middle;
+}
+
+.avatar {
+    background-position: center;
+    background-size: cover;
+}
+.avatarP {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}

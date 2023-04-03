@@ -1,9 +1,13 @@
+import { Button, Typography } from "antd";
 import { useSession, signIn, signOut, SignInResponse } from "next-auth/react";
+
+
+const { Text } = Typography;
 
 const HomePage = () => {
     const handleLogin = async () => {
         const result = await signIn("email-password", {
-            email: "test@example.com",
+            email: "admin@example.com",
             password: "123",
             redirect: false
         }) as SignInResponse;
@@ -17,18 +21,11 @@ const HomePage = () => {
     }
 
     const { data: session } = useSession();
+    const user = session?.user
 
     return (
         <div>
-            {session ? 
-            <>
-                <p>logged in</p>
-                <button onClick={() => signOut()}>log out</button>
-            </> : 
-            <>
-                <p>not logged in</p>
-                <button onClick={() => handleLogin()}>log in</button>
-            </>}
+            
         </div>
     )
 }

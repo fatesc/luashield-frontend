@@ -10,22 +10,23 @@ export const authOptions: NextAuthOptions = {
 
     providers: [
         CredentialsProvider({
-            id: "email-password",
+            id: "username-password",
             name: "Luasheild Authentication",
             credentials: {
-                email: { label: "Email", type: "text" },
+                username: { label: "username", type: "text" },
                 password: { label: "Password", type: "password" }
             },
             authorize: async (credentials, req) => {
-                const { email, password } = credentials as { email: string, password: string };
-                const response = await fetch("https://randomuser.me/api/", {
-                    method: "GET",
-                    // body: JSON.stringify({ email, password }),
-                    // headers: {
-                    //     "Content-Type": "application/json"
-                    // }
+                const { username, password } = credentials as { username: string, password: string };
+                const response = await fetch("https://luashield.com/api/login", {
+                    method: "POST",
+                    body: JSON.stringify({ username, password }),
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
                 });
                 const user = await response.json();
+                console.log(user);
                 
                 if (response.ok && user) {
                     return user;
@@ -38,6 +39,10 @@ export const authOptions: NextAuthOptions = {
     callbacks: {
         jwt: async ({ token, user }) => {
             if (user) {
+                if (user.email == "admin@example.com") {
+                    user.role = "admin"
+                }
+
                 token.user = user
             }
             return token;

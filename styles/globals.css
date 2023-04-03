@@ -1,0 +1,22 @@
+.ant-select-selector {
+    height: 15px !important;
+}
+
+.ant-collapse-expand-icon {
+    height: 30px !important;
+}
+
+.ant-collapse-header-text {
+    order: -1;
+    padding-inline-end: 3px;
+}
+
+.ant-collapse-header {
+    display: inline-flex !important;
+    padding-block: 0px 0px !important;
+    padding: 0px 0px !important;
+}
+.ant-collapse-content-box {
+    padding-block: 0px 0px !important;
+    padding: 0px 7px !important;
+}

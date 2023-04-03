@@ -47,11 +47,12 @@ export interface Script {
 export interface Buyer {
     id: string;
     Email: string;
-    Password: string;
     APIKey: string;
     Username: string;
     SubscriptionID: string;
     Projects: string[];
+
+    Subscription: Subscription
 };
 
 export interface Subscription {
