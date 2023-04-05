@@ -5,8 +5,8 @@ import { useSession } from "next-auth/react";
 
 const { Title, Text } = Typography;
 
-export default function Profile() {
-    const [disabled, setDisabled] = useState(false);
+const Profile = () => {
+    const [ disabled, setDisabled ] = useState(false);
     const { data: session, status } = useSession();
 
     const user = session?.user
@@ -35,7 +35,15 @@ export default function Profile() {
                         </Space>
                     </Row>
                     <Row style={{ marginTop: 10 }}>
-                        <Space size={80}>
+                        <Space size={45}>
+                            <Col>
+                                <Title level={5}>Username</Title>
+                                <Col><Text>{user?.Username}</Text></Col>
+                            </Col>
+                            <Col>
+                                <Title level={5}>Subscription ID</Title>
+                                <Col><Text>{user?.SubscriptionID}</Text></Col>
+                            </Col>
                             <Col>
                                 <Title level={5}>Projects</Title>
                                 <Col><Text>{user?.Subscription.Projects}</Text></Col>
@@ -47,3 +55,5 @@ export default function Profile() {
         </Skeleton>
     </>
 }
+
+export default Profile;

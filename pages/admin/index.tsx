@@ -1,21 +1,32 @@
 import { useSession } from "next-auth/react";
+import { Result, Button, Skeleton } from "antd";
 
 const AdminPage = () => {
-    const { status } = useSession({
+    const { status, data: session } = useSession({
         required: true,
         onUnauthenticated: () => {
             
         }
-    })
+    });
+    
+    const user = session?.user
 
     if (status == "loading") {
-        return "not authenticated";
+        return <Skeleton active />
+    }
+
+    if (!user.Admin) {
+        return <Result status="error" title="Protected Page" subTitle="This page is for admins only"/>
     }
 
     return (
-        <div>AdminPage</div>
-        // manage buyers
+        <div><Button>Test</Button></div>
     )
+}
+
+AdminPage.auth = {
+    role: "admin",
+    unauthorized: "/"
 }
 
 

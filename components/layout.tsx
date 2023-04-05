@@ -4,8 +4,8 @@ import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useSession, signOut } from "next-auth/react";
-import { useState } from "react";
-import { Button, MenuProps, Space, ConfigProvider, Menu, Popconfirm, FloatButton, Typography, Avatar, theme, Layout as PageLayout } from "antd";
+import { useState, cloneElement } from "react";
+import { Button, MenuProps, Space, ConfigProvider, Menu, Divider, Select, FloatButton, Typography, Dropdown, Avatar, theme, Layout as PageLayout } from "antd";
 import { LayoutOutlined, HomeOutlined, QuestionCircleOutlined, UserOutlined } from "@ant-design/icons";
 
 import { useTheme } from "../hooks/usetheme";
@@ -16,6 +16,8 @@ import Sun from "./icons/Sun.svg";
 
 
 import type { ItemType } from "antd/es/menu/hooks/useItems";
+import { Buyer } from "../types/types";
+import Link from "next/link";
 const { Header, Content, Sider } = PageLayout;
 const { Title, Text } = Typography;
 
@@ -58,8 +60,9 @@ const items: ItemType[] = [
 
 function Layout({ children }: OriginProps) {
     const router = useRouter();
-    const [lightMode, useLightMode] = useTheme();
+    const [ lightMode, useLightMode ] = useTheme();
     const theme: any = lightMode ? LightTheme : DarkTheme
+    const { token } = theme
 
     const { data: session, status } = useSession();
 
@@ -88,6 +91,27 @@ function Layout({ children }: OriginProps) {
     const selectedKeys = router.route.split("/");
     selectedKeys.shift();
 
+    const profileItems: ItemType[] = [
+        {
+            key: "name",
+            label: <Link href="/account/profile">Signed in as <b>{user?.Username}</b></Link>
+        },
+        {
+            key: "projects",
+            label: <Link href="/dashboard/panel">Your Projects</Link>
+        },
+        {
+            key: "sign",
+            label: <Text onClick={logOut}>Sign out</Text>
+        }
+    ];
+
+    const contentStyle = {
+        backgroundColor: token.colorBgElevated,
+        borderRadius: token.borderRadiusLG,
+        boxShadow: token.boxShadowSecondary,
+    };
+
     return <>
         <Head>
             <title>Luashield - #1 whitelisting service</title>
@@ -102,9 +126,10 @@ function Layout({ children }: OriginProps) {
                         <Title level={3}>Luashield</Title>
                     </Space>
                     <Space align="center" className="rightHeader">
-                        {user ? <Popconfirm title="Log Out?" description="are you sure you would like to log out?" icon={<QuestionCircleOutlined style={{ color: "red" }} />} placement="bottomRight" open={popOpen} onConfirm={logOut} onCancel={handlePopCancel} okButtonProps={{ loading: loggingOut }}>
-                            <Avatar className="avatar" icon={<UserOutlined />} onClick={() => setPopOpen(!popOpen)}/>
-                        </Popconfirm> : <Button type="primary" onClick={login}>Log in</Button>}
+                        {user ? <Dropdown placement="bottomLeft" arrow={{ pointAtCenter: true }} menu={{ items: profileItems }} >
+                            <Avatar className="avatar" icon={<UserOutlined />} />
+                        </Dropdown>
+                        : <Button type="primary" onClick={login}>Log in</Button>}
                     </Space>
                 </Header>
                 <PageLayout hasSider>

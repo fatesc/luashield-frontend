@@ -26,7 +26,7 @@ export const authOptions: NextAuthOptions = {
                     }
                 });
                 const user = await response.json();
-                console.log(user);
+                console.log(username, password, user);
                 
                 if (response.ok && user) {
                     return user;
@@ -39,10 +39,6 @@ export const authOptions: NextAuthOptions = {
     callbacks: {
         jwt: async ({ token, user }) => {
             if (user) {
-                if (user.email == "admin@example.com") {
-                    user.role = "admin"
-                }
-
                 token.user = user
             }
             return token;

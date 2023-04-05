@@ -23,17 +23,17 @@ export interface Project {
     Name: string;
     SuccessWebhook: string;
     BlacklistWebhook: string;
-    UnaunthorizedWebhook: string;
+    UnauthorizedWebhook: string;
     Owner: string;
+
+    Online: boolean;
+    SynapseX: boolean;
+    ScriptWare: boolean;
+    SynapseV3: boolean;
 
     Executions: number;
     CrackAttempts: number;
     Users: number;
-
-    Online: number;
-    SynapseX: number;
-    ScriptWare: number;
-    SynapseV3: number;
 };
 
 export interface Script {
@@ -52,7 +52,9 @@ export interface Buyer {
     SubscriptionID: string;
     Projects: string[];
 
-    Subscription: Subscription
+    Subscription: Subscription;
+
+    Admin?: boolean;
 };
 
 export interface Subscription {

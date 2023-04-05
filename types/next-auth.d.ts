@@ -9,9 +9,15 @@ declare module "next-auth" {
         user: Buyer
     }
 
-    interface User {
-        role: "admin" | "basic"
-        active: boolean
+    interface User extends Buyer {
+        // role: "admin" | "basic";
+    }
+
+    interface JWT {
+        user: Buyer
+    }
+    interface DefaultJWT {
+        user: BUyer
     }
 };
 
