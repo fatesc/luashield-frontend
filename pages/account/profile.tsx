@@ -50,6 +50,14 @@ const Profile = () => {
                             </Col>
                         </Space>
                     </Row>
+                    <Row style={{ marginTop: 10 }}>
+                        <Space size={45}>
+                            <Col>
+                                <Title level={5}>API Key</Title>
+                                <Col><Text>{user?.APIKey}</Text></Col>
+                            </Col>
+                        </Space>
+                    </Row>
                 </div>
             </Space>
         </Skeleton>

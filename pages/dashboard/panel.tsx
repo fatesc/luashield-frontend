@@ -84,28 +84,6 @@ const Panel = () => {
             });
     }
 
-    const submitProject = () => {
-        message.loading("Creating Project...");
-        fetch("https://luashield.com/api/projects", {
-            method: "POST",
-            headers: {            
-                "Content-Type": "application/json",
-                "LuaShield-API-Key": user?.APIKey as string
-            },
-            body: JSON.stringify({
-                name: projectInfo.Name,
-                success_webhook: projectInfo.SuccessWebhook,
-                blacklist_webhook: projectInfo.BlacklistWebhook,
-                unauthorized_webhook: projectInfo.UnauthorizedWebhook,
-                allowed_exploits: {
-                    synapse_x: projectInfo.SynapseX,
-                    synapse_v3: projectInfo.SynapseV3,
-                    script_ware: projectInfo.ScriptWare
-                }
-            })
-        })
-    }
-
     const formValues: FormItemProps = {
         rules: [
             { required: true, message: "Input a discord webhook" },
@@ -158,23 +136,48 @@ const Panel = () => {
         }
     }
 
-    const [projects, setProjects] = useState([]);
+    const [projects, setProjects] = useState<Project[]>([]);
     const [projectsLoading, setProjectsLoading] = useState(false);
+
+    const submitProject = () => {
+        message.loading("Creating Project...");
+        fetch("https://luashield.com/api/projects", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "LuaShield-API-Key": user?.APIKey as string
+            },
+            body: JSON.stringify({
+                name: projectInfo.Name,
+                success_webhook: projectInfo.SuccessWebhook,
+                blacklist_webhook: projectInfo.BlacklistWebhook,
+                unauthorized_webhook: projectInfo.UnauthorizedWebhook,
+                allowed_exploits: {
+                    synapse_x: projectInfo.SynapseX,
+                    synapse_v3: projectInfo.SynapseV3,
+                    script_ware: projectInfo.ScriptWare
+                }
+            })
+        })
+            .then(res => res.json())
+            .then(project => {
+                message.success("Project Created!");
+                projects.push(project);
+                setConfirmModalOpen(false);
+            });
+    }
 
     useEffect(() => {
         if (!user) {
             return;
         }
-
         setProjectsLoading(true);
-        console.log(user?.APIKey);
         fetch("https://luashield.com/api/projects", {
             headers: {
                 "LuaShield-API-Key": user?.APIKey as string
             }
         }).then(res => res.json())
             .then(projects => {
-                console.log(projects);
                 setProjectsLoading(false);
                 setProjects(projects);
             })
@@ -182,25 +185,25 @@ const Panel = () => {
     }, [status]);
 
     if (status == "loading") {
-        return <Skeleton active/>
+        return <Skeleton active />
     }
 
     return <>
         <Title>Welcome, <div style={{ color: token.colorPrimary }}>{user?.Username}</div></Title>
         <Row gutter={1}>
             <Col {...textResponsive}>
-                <Statistic title="Active Users" value={4533} />
+                <Statistic title="Active Users" value={1} />
             </Col>
             <Col {...textResponsive}>
-                <Statistic title="Users" value={2333} />
+                <Statistic title="Users" value={projectInfo?.Users} />
             </Col>
             <Col {...textResponsive}>
-                <Statistic title="Crack Attempts" value={2333} />
+                <Statistic title="Crack Attempts" value={projectInfo?.CrackAttempts} />
             </Col>
         </Row>
         <Row>
             <Col {...textResponsive}>
-                <Statistic title="Execution Count" value={2333} />
+                <Statistic title="Execution Count" value={projectInfo?.Executions} />
             </Col>
         </Row>
         <Row style={{ marginTop: 15 }}>
@@ -213,10 +216,10 @@ const Panel = () => {
             <Skeleton active={true} loading={projectsLoading}>
                 <Card style={{ minWidth: "100%" }}>
                     <Title level={3}>Projects ({user.Subscription.Projects})</Title>
-                    
+
                     <Row gutter={15}>
-                        {projects.map((project, i) => <Col>
-                            <ProjectCard key={i} project={project} onManage={() => { setModalOpen(true); setProjectInfo(project); setFields(); setManaging(true); }} />
+                        {projects.map((project, i) => <Col key={i}>
+                            <ProjectCard project={project} onManage={() => { setModalOpen(true); setProjectInfo(project); setFields(); setManaging(true); }} />
                         </Col>)}
                     </Row>
                 </Card>
@@ -232,7 +235,7 @@ const Panel = () => {
                     {webhookInputs.map((v, i) => <Form.Item key={i} label={v.label} name={v.name} {...formValues}>
                         <Input placeholder="webhook" name={v.name} suffix={<Tooltip title="Discord Webhook"><InfoCircleOutlined /></Tooltip>} />
                     </Form.Item>)}
-                    <Form.Item label="Exploit" name="Exploit" rules={[{ required: true, message: "Choose an exploit/s to allow"}]}>
+                    <Form.Item label="Exploit" name="Exploit" rules={[{ required: true, message: "Choose an exploit/s to allow" }]}>
                         <Select placeholder="choose an exploit/s for the project to support" mode="multiple" allowClear>
                             <Option value="SynapseX">Synapse X</Option>
                             <Option value="SynapseV3">Synapse X V3</Option>
@@ -248,8 +251,8 @@ const Panel = () => {
                                 <Button>Upload Script</Button>
                             </Upload>
                         </Form.Item> */}
-                        <Form.Item wrapperCol={{ offset: 9, span: 16 }}>
-                            <Button type="primary" onClick={() => form.resetFields()}>Reset</Button>
+                        <Form.Item label="Fields">
+                            <Button type="primary" onClick={() => form.resetFields()}>Clear</Button>
                         </Form.Item>
                     </>}
 
@@ -267,10 +270,10 @@ const Panel = () => {
                     <Title level={5}>Blacklist Webhook: <Text type="secondary">{projectInfo.BlacklistWebhook}</Text></Title>
                     <Title level={5}>Supported Exploits: <Text type="secondary">{
                         [
-                            projectInfo.ScriptWare ? "ScriptWare" : null,
-                            projectInfo.SynapseV3 ? "Synapse V3" : null,
-                            projectInfo.SynapseX ? "Synapse X" : null,
-                        ].join(", ")
+                            projectInfo.ScriptWare && "ScriptWare",
+                            projectInfo.SynapseV3 && "Synapse V3",
+                            projectInfo.SynapseX && "Synapse X",
+                        ].filter(Boolean).join(", ")
                     }</Text></Title>
                 </Col>
             </Row>

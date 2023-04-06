@@ -12,6 +12,7 @@ export interface User {
     CrackAttempts: number;
     MaxExecutions: number;
     ExpireAt?: number;
+    key: number;
 
     Whitelisted: boolean;
 
@@ -34,6 +35,8 @@ export interface Project {
     Executions: number;
     CrackAttempts: number;
     Users: number;
+
+    Scripts?: Script[]
 };
 
 export interface Script {

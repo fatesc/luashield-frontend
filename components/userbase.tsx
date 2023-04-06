@@ -1,4 +1,4 @@
-import { Typography, Button, Row, Col, Statistic, Card, Empty, Input, Table, Skeleton, Tag, Spin, Tooltip } from "antd"
+import { Typography, Button, Row, Col, Statistic, Card, Empty, Input, Table, Skeleton, Tag, Spin, Tooltip, Divider } from "antd"
 import { LoadingOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import type { ColumnsType, TableProps } from "antd/es/table";
@@ -30,10 +30,14 @@ const Userbase = ({ project }: { project: Project }) => {
 
     const columns: ColumnsType<User> = [
         {
-            title: "Identifier",
-            dataIndex: "Identifier",
+            title: "Key",
+            dataIndex: "Key",
             defaultSortOrder: "descend",
             key: "user",
+            ellipsis: {
+                showTitle: false
+            },
+            render: (key) => <Tooltip placement="bottomLeft" title={key}>{key}</Tooltip>,
             width: 100
         },
         {
@@ -47,18 +51,13 @@ const Userbase = ({ project }: { project: Project }) => {
             render: (uid) => <Tooltip placement="bottomLeft" title={uid}>{uid}</Tooltip>
         },
         {
-            title: "Exploit",
-            dataIndex: "Exploit",
-            key: "exploit"
-        },
-        {
-            title: "HWID",
-            dataIndex: "HWID",
-            key: "hwid",
+            title: "Username",
+            dataIndex: "Username",
+            key: "username",
             ellipsis: {
                 showTitle: false
             },
-            render: (hwid) => <Tooltip placement="bottomLeft" title={hwid}>{hwid}</Tooltip>
+            render: (username) => <Tooltip placement="bottomLeft" title={username}>{username}</Tooltip>
         },
         {
             title: "Status",
@@ -89,30 +88,35 @@ const Userbase = ({ project }: { project: Project }) => {
     };
     const [lightMode] = useTheme();
 
-    const [scriptInfo, setScriptInfo] = useState<Script>();
-    const [users, setUsers] = useState<User[]>([]);
+    const [users, setUsers] = useState<User[]>();
     const [usersLoading, setUsersLoading] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
+        if (!user || !router.query.id || users) {
+            return
+        }
+
         setUsersLoading(true);
-        fetch(`https://luashield.com/api/projects/${project.id}/users`, {
+        fetch(`https://luashield.com/api/projects/${project?.id}/users`, {
+            method: "GET",
             headers: {
                 "LuaShield-API-Key": user?.APIKey as string
             }
         }).then(res => res.json())
-        .then((users: User[]) => {
-            setUsersLoading(false);
-            users.forEach((user, index) => {
-                user.key = index
+            .then((users: User[]) => {
+                console.log(users);
+                setUsersLoading(false);
+                users.forEach((user, index) => {
+                    user.key = index
+                })
+                setUsers(users);
             })
-            setUsers(users);
-        })
-        .catch(() => {
-            setUsersLoading(false);
-        });
+            .catch(() => {
+                setUsersLoading(false);
+            });
 
-    }, []);
+    }, [user, router.query, status]);
 
     return <>
         <Row style={{ marginTop: 25 }}>
@@ -120,11 +124,13 @@ const Userbase = ({ project }: { project: Project }) => {
                 <Card>
                     <Skeleton loading={usersLoading} active>
                         <Row>
-                            <Col span={3}>
-                                <Input.Search placeholder="search" />
+                            <Col style={{ width: "100%" }}>
+                                <Title level={5}>Users</Title>
+                                <Divider />
+                                {/* <Input.Search placeholder="search" /> */}
                             </Col>
                         </Row>
-                        <Row style={{ marginTop: 10 }} gutter={5}>
+                        <Row style={{ marginTop: 10 }} gutter={6}>
                             <Col {...dataResponsive}>
                                 <Table size="middle" pagination={{ position: ["bottomCenter"], showQuickJumper: true, defaultPageSize: 5, pageSizeOptions: ["5", "7", "10", "15"] }} columns={columns} dataSource={users} expandable={{ expandedRowRender: (user) => (<Text code>{JSON.stringify(user)}</Text>) }} />
                             </Col>
@@ -132,36 +138,32 @@ const Userbase = ({ project }: { project: Project }) => {
                                 {userInfo ? <Card style={{ height: "100%" }}>
                                     <Row>
                                         <Col span={6}>
-                                            <Title level={4}>User</Title>
-                                            <Col><Text copyable>{userInfo.HWID}</Text></Col>
+                                            <Title level={4}>Username</Title>
+                                            <Col><Text copyable>{userInfo.Username}</Text></Col>
                                         </Col>
-                                        {/* <Col span={6}>
-                                        <Title level={4}>User ID</Title>
-                                        <Col><Text copyable>{userInfo["User ID"]}</Text></Col>
-                                    </Col> */}
-                                        {/* <Col span={6}>
-                                        <Title level={4}>Status</Title> 
-                                        <Col><Tag color={userInfo.Whitelisted ? "success" : "error"}>{userInfo.Whitelisted ? "Whitelisted" : "Blacklisted"}</Tag></Col>
-                                    </Col> */}
                                         <Col span={6}>
                                             <Title level={4}>Executions</Title>
                                             <Col><Text>{userInfo.Executions}</Text></Col>
                                         </Col>
                                         <Col span={6}>
-                                            <Title level={4}>Exploit</Title>
-                                            <Col><Text>{userInfo.Exploit ?? "?"}</Text></Col>
+                                            <Title level={4}>Created At</Title>
+                                            <Col><Text>{new Date(userInfo.CreatedAt).toDateString()}</Text></Col>
+                                        </Col>
+                                        <Col span={6}>
+                                            <Title level={4}>Note</Title>
+                                            <Col><Text>{userInfo.Note}</Text></Col>
                                         </Col>
                                     </Row>
                                     <Row style={{ marginTop: 15 }}>
                                         <Col>
                                             <Col>
                                                 <Title level={4}>Crack Attempts</Title>
-                                                <Col><Text type="danger">{userInfo["Crack Attempts"]}</Text></Col>
+                                                <Col><Text type="danger">{userInfo.CrackAttempts}</Text></Col>
                                             </Col>
                                             <Col>
                                                 <Title level={4}>HWID</Title>
                                                 <Col>
-                                                    <Text>{userInfo.HWID}</Text>
+                                                    <Text>{userInfo.HWID ?? "None"}</Text>
                                                 </Col>
                                             </Col>
                                         </Col>

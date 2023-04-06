@@ -122,8 +122,8 @@ function Layout({ children }: OriginProps) {
             <ConfigProvider theme={theme}>
                 <Header className="header" style={{ background: theme.token.colorBgContainer }}>
                     <Space align="center" className="leftHeader">
-                        <Image src="/cover.png" alt="logo" height={30} width={30} />
-                        <Title level={3}>Luashield</Title>
+                        {/* <Image src="/cover.png" alt="logo" height={30} width={30} /> */}
+                        <Title level={3}>LuaShield Beta</Title>
                     </Space>
                     <Space align="center" className="rightHeader">
                         {user ? <Dropdown placement="bottomLeft" arrow={{ pointAtCenter: true }} menu={{ items: profileItems }} >
