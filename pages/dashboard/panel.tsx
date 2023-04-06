@@ -141,7 +141,7 @@ const Panel = () => {
 
     const submitProject = () => {
         message.loading("Creating Project...");
-        fetch("https://luashield.com/api/projects", {
+        fetch("https://api.luashield.com/projects", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -172,7 +172,7 @@ const Panel = () => {
             return;
         }
         setProjectsLoading(true);
-        fetch("https://luashield.com/api/projects", {
+        fetch("https://api.luashield.com/projects", {
             headers: {
                 "LuaShield-API-Key": user?.APIKey as string
             }

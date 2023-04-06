@@ -98,7 +98,7 @@ const Userbase = ({ project }: { project: Project }) => {
         }
 
         setUsersLoading(true);
-        fetch(`https://luashield.com/api/projects/${project?.id}/users`, {
+        fetch(`https://api.luashield.com/projects/${project?.id}/users`, {
             method: "GET",
             headers: {
                 "LuaShield-API-Key": user?.APIKey as string

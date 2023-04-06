@@ -18,7 +18,7 @@ export const authOptions: NextAuthOptions = {
             },
             authorize: async (credentials, req) => {
                 const { username, password } = credentials as { username: string, password: string };
-                const response = await fetch("https://luashield.com/api/login", {
+                const response = await fetch("https://api.luashield.com/login", {
                     method: "POST",
                     body: JSON.stringify({ username, password }),
                     headers: {
