@@ -234,7 +234,7 @@ const Project = () => {
         }
 
         console.log(user, id);
-        fetch("https://api.luashield.comp/rojects/" + id, {
+        fetch("https://api.luashield.com/projects/" + id, {
             method: "GET",
             headers: {
                 "LuaShield-API-Key": user?.APIKey as string
