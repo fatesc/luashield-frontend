@@ -59,7 +59,7 @@ const Project = () => {
 
     const deleteProject = async () => {
         message.loading("Deleting project...");
-        await fetch("https://api.luashield.comprojects/" + project?.id, {
+        await fetch("https://api.luashield.com/projects/" + project?.id, {
             method: "DELETE",
             headers: {
                 "LuaShield-API-Key": user?.APIKey as string
@@ -99,7 +99,7 @@ const Project = () => {
                     }
                 }
 
-                await fetch("https://api.luashield.comprojects/" + project?.id, {
+                await fetch("https://api.luashield.com/projects/" + project?.id, {
                     method: "PATCH",
                     headers: {
                         "LuaShield-API-Key": user?.APIKey as string,
@@ -234,7 +234,7 @@ const Project = () => {
         }
 
         console.log(user, id);
-        fetch("https://api.luashield.comprojects/" + id, {
+        fetch("https://api.luashield.comp/rojects/" + id, {
             method: "GET",
             headers: {
                 "LuaShield-API-Key": user?.APIKey as string
