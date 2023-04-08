@@ -209,7 +209,7 @@ const Panel = () => {
         <Row style={{ marginTop: 15 }}>
             <Col>
                 <Title level={3}>Projects</Title>
-                <Col><Button onClick={() => { setModalOpen(true); form.resetFields() }}>Create Project</Button></Col>
+                <Col><Button onClick={() => { setModalOpen(true); form.resetFields(); }}>Create Project</Button></Col>
             </Col>
         </Row>
         <Row style={{ marginTop: 20 }}>

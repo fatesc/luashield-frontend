@@ -43,10 +43,10 @@ export default function Login() {
                     <Title level={3}>Login!</Title>
                     <Form form={form} name="loginForm" onFinish={logIn} initialValues={{ remember: true }}>
                         <Form.Item rules={[{ required: true, message: "a username is required" }]} name="username">
-                            <Input placeholder="username" />
+                            <Input placeholder="username" prefix={<UserOutlined />} />
                         </Form.Item>
                         <Form.Item name="password" rules={[{ required: true, message: "input your password" }]}>
-                            <Input.Password placeholder="password" />
+                            <Input.Password placeholder="password" prefix={<LockOutlined />} />
                         </Form.Item>
                         <Form.Item>
                             <Form.Item noStyle name="remember" valuePropName="checked">

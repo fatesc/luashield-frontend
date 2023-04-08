@@ -29,17 +29,17 @@ const Userbase = ({ project }: { project: Project }) => {
     }
 
     const columns: ColumnsType<User> = [
-        {
-            title: "Key",
-            dataIndex: "Key",
-            defaultSortOrder: "descend",
-            key: "user",
-            ellipsis: {
-                showTitle: false
-            },
-            render: (key) => <Tooltip placement="bottomLeft" title={key}>{key}</Tooltip>,
-            width: 100
-        },
+        // {
+        //     title: "Key",
+        //     dataIndex: "Key",
+        //     defaultSortOrder: "descend",
+        //     key: "user",
+        //     ellipsis: {
+        //         showTitle: false
+        //     },
+        //     render: (key) => <Tooltip placement="bottomLeft" title={key}>{key}</Tooltip>,
+        //     width: 100
+        // },
         {
             title: "User ID",
             dataIndex: "id",
@@ -93,7 +93,7 @@ const Userbase = ({ project }: { project: Project }) => {
     const router = useRouter();
 
     useEffect(() => {
-        if (!user || !router.query.id || users) {
+        if (!user || !router.query.id || users || !project?.id) {
             return
         }
 
@@ -116,7 +116,7 @@ const Userbase = ({ project }: { project: Project }) => {
                 setUsersLoading(false);
             });
 
-    }, [user, router.query, status]);
+    }, [user, router.query, status, project?.id]);
 
     return <>
         <Row style={{ marginTop: 25 }}>

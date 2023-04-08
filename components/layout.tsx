@@ -4,9 +4,9 @@ import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useSession, signOut } from "next-auth/react";
-import { useState, cloneElement } from "react";
+import { useState, cloneElement, useEffect } from "react";
 import { Button, MenuProps, Space, ConfigProvider, Menu, Divider, Select, FloatButton, Typography, Dropdown, Avatar, theme, Layout as PageLayout } from "antd";
-import { LayoutOutlined, HomeOutlined, QuestionCircleOutlined, UserOutlined } from "@ant-design/icons";
+import { LayoutOutlined, HomeOutlined, FireOutlined, UserOutlined } from "@ant-design/icons";
 
 import { useTheme } from "../hooks/usetheme";
 import LightTheme from "../themes/light";
@@ -28,8 +28,7 @@ const mainItems: ItemType[] = [
         icon: <HomeOutlined />
     }
 ];
-
-const items: ItemType[] = [
+const layoutItems = [
     {
         key: "dashboard",
         label: "Dashboard",
@@ -56,7 +55,7 @@ const items: ItemType[] = [
             }
         ]
     }
-];
+]
 
 function Layout({ children }: OriginProps) {
     const router = useRouter();
@@ -75,18 +74,10 @@ function Layout({ children }: OriginProps) {
         router.push("/" + keyPath.reverse().join("/"));
     }
 
-    const [popOpen, setPopOpen] = useState(false);
-    const [loggingOut, setLoggingOut] = useState(false);
-
     const login = () => router.push("/auth/login");
     const logOut = async () => {
-        setLoggingOut(true);
         await signOut({ callbackUrl: "/" });
-        setLoggingOut(false);
     };
-    const handlePopCancel = () => {
-        setPopOpen(false);
-    }
 
     const selectedKeys = router.route.split("/");
     selectedKeys.shift();
@@ -105,12 +96,17 @@ function Layout({ children }: OriginProps) {
             label: <Text onClick={logOut}>Sign out</Text>
         }
     ];
+    const [items, setItems] = useState<ItemType[]>(layoutItems);
 
-    const contentStyle = {
-        backgroundColor: token.colorBgElevated,
-        borderRadius: token.borderRadiusLG,
-        boxShadow: token.boxShadowSecondary,
-    };
+    useEffect(() => {
+        if (user?.Admin) {
+            setItems([...layoutItems, {
+                key: "admin",
+                label: "Admin",
+                icon: <FireOutlined />
+            }])
+        }
+    }, [user]);
 
     return <>
         <Head>

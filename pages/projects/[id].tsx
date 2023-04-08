@@ -1,12 +1,12 @@
 import { useRouter } from "next/router";
-import { UploadProps, Typography, Skeleton, Form, Row, Col, Button, Card, Input, Switch, Select, Tooltip, FormItemProps, Checkbox, Popconfirm, List, Space, Divider, Modal, Upload, message } from "antd";
+import { UploadProps, Typography, Skeleton, Form, Row, Col, Button, Card, Input, Switch, Select, Tooltip, FormItemProps, Checkbox, Popconfirm, Space, Divider, Modal, Upload, message } from "antd";
 import { FundProjectionScreenOutlined, InfoCircleOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { Project, Script } from "../../types/types";
 import { useSession } from "next-auth/react";
 import { deepEqual } from "assert";
 import Userbase from "../../components/userbase";
-import VirtualList from "rc-virtual-list";
+import List from "../../components/list";
 
 const { Text, Title } = Typography
 const { Option } = Select
@@ -31,7 +31,7 @@ const Project = () => {
     const [scriptConfirmModalOpen, setScriptConfirmModal] = useState(false);
     const [scriptManaging, setScriptManaging] = useState<boolean | Script>(false);
     const [validScriptFile, setValidScriptFile] = useState(false);
-    const [fileContents, setFileContents] = useState<string>();
+    const [fileContents, setFileContents] = useState<string | null>();
     const [previousScriptValues, setPreviousScriptValues] = useState();
 
     const webhookInputs = [
@@ -203,11 +203,33 @@ const Project = () => {
     }
 
     const createScript = () => {
-        
-    }
+        if (!fileContents) {
+            return message.error("Upload a script");
+        }
 
-    const submitScript = () => {
-        console.log(scriptInfo);
+        scriptForm.validateFields()
+            .then(values => {
+                fetch(`https://api.luashield.com/projects/${project?.id}/scripts`, {
+                    method: "POST",
+                    headers: {
+                        "LuaShield-API-Key": user?.APIKey as string,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        name: values.Name,
+                        script: Buffer.from(fileContents).toString("base64")
+                    })
+                })
+                    .then(res => res.json())
+                    .then(script => {
+                        if (!script?.error) {
+                            setScripts([...scripts, script]);
+                            message.success("Script Created!");
+                        } else {
+                            message.error(JSON.stringify(script));
+                        }
+                    });
+            });
     }
 
     const validFiles = ["txt", "lua", "luau"];
@@ -229,7 +251,7 @@ const Project = () => {
     }
 
     useEffect(() => {
-        if (!user || !router.query || project) {
+        if (!user || !router.query?.id || project) {
             return
         }
 
@@ -315,19 +337,29 @@ const Project = () => {
                     </Card>
                 </Col>
                 <Col style={{ flex: 1 }}>
-                    <Card style={{ width: "100%" }} >
-                        <List header={<div style={{ display: "flex", justifyContent: "space-between" }}><Title level={5}>Scripts ({scripts?.length})</Title><Button style={{ float: "right" }} onClick={() => { scriptForm.resetFields(); scriptForm.validateFields(); setScriptModal(true); }}>Create Script</Button></div>} style={{ marginTop: -15 }}>
-                            <VirtualList itemKey="script" data={scripts} height={475}>
-                                {(script, i) => <List.Item key={i}>
-                                    <List.Item.Meta
-                                        title={script.Name}
-                                        description={script.Version}
-                                    />
-                                    <div><Button type="primary" onClick={() => manageScript(script)}>Manage Script</Button></div>
-                                </List.Item>}
-                            </VirtualList>
-                        </List>
-                    </Card>
+                    <List
+                        width="100%"
+                        height="100%"
+                        key="scripts"
+                        title={`Scripts (${scripts?.length})`}
+                        searchBar={{
+                            placeHolder: "Search Scripts",
+                            onChange: () => { }
+                        }}
+                        data={scripts}
+                        create={{
+                            text: "Create Script",
+                            onClick: () => { scriptForm.resetFields(); scriptForm.validateFields(); setScriptModal(true); setFileContents(null); }
+                        }}
+                        manage={{
+                            text: "Manage Script",
+                            onClick: (script: Script) => manageScript(script)
+                        }}
+                        item={{
+                            title: "Name",
+                            description: "Version"
+                        }}
+                    />
                 </Col>
                 <Col>
                     {project ? <Userbase project={project} /> : <Skeleton active />}
@@ -355,7 +387,7 @@ const Project = () => {
                     <Form.Item label="Script Name" name="Name" rules={[{ required: true, message: "Input a script name" }, { min: 5, message: "Script name must exceed 5 characters " }]} hasFeedback>
                         <Input placeholder="name" name="Name" />
                     </Form.Item>
-                    <Form.Item label="Script Contents" name="Contents" rules={[{ required: false, message: "You must input a script" }]} valuePropName="fileList">
+                    <Form.Item label="Script Contents" name="Contents" rules={[{ required: false, message: "You must input a script" }]}>
                         <Upload {...uploadProps}>
                             <Button>Upload Script</Button>
                         </Upload>
